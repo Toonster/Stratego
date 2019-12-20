@@ -103,4 +103,8 @@ public abstract class Unit {
     public void setChar(Character character) {
         this.character = character;
     }
+
+    public Position getPosition() {
+        return position;
+    }
 }
