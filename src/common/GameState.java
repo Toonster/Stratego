@@ -1,7 +1,8 @@
-import army.Army;
-import player.Player;
+package common;
 
-import java.io.Serializable;
+import Player.Player;
+import army.Army;
+import java.io.Serializable; //? wat doet dit
 
 public class GameState implements Serializable {
 
@@ -19,7 +20,9 @@ public class GameState implements Serializable {
         this.enemyArmy = enemyArmy;
     }
 
-    public Player getCurrentPlayer() { return currentPlayer; }
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
 
     public Player getEnemyPlayer() {
         return enemyPlayer;
@@ -29,5 +32,7 @@ public class GameState implements Serializable {
         return currentArmy;
     }
 
-    public Army getEnemyArmy() { return enemyArmy; }
+    public Army getEnemyArmy() {
+        return enemyArmy;
+    }
 }

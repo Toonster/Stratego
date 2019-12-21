@@ -3,9 +3,14 @@ package Board;
 public class Tile {
     private char character;
     private Surface surface;
+    private GrondSoorten soorten;
 
     public Tile (Surface surface){
         this.surface=surface;
+    }
+
+    public Tile(GrondSoorten soorten) {
+        this.soorten = soorten;
     }
 
     public void draw(){
@@ -13,12 +18,9 @@ public class Tile {
     }
 
     public void update(char character){
-
+        this.character = character;
     }
 
-    public void clear(){
-
-    }
 
     public boolean isFree(){
         if (surface.isAccessable()) {
@@ -32,5 +34,10 @@ public class Tile {
             return true;
         }
         return false;
+    }
+
+
+    public void removeChar(){   //clear()
+        this.character = ' ';
     }
 }

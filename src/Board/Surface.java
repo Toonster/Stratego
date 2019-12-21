@@ -1,6 +1,7 @@
 package Board;
 
 public class Surface {
+
     private boolean accessable;
     private Grond grond;
     private Surface surface;
@@ -10,9 +11,12 @@ public class Surface {
     }
 
     public boolean isAccessable(){
-        if (surface.equals(grond) && accessable){
+        if (surface.equals(GrondSoorten.GROND) && accessable){
             return true;
         }
         return false;
     }
+
+
+
 }

@@ -107,4 +107,8 @@ public abstract class Unit {
     public Position getPosition() {
         return position;
     }
+
+    public void remove(){
+
+    }
 }
