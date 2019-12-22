@@ -3,6 +3,8 @@ package common;
 import Board.Board;
 import Player.Player;
 import army.Army;
+import army.unit.Bomb;
+import army.unit.Unit;
 
 public class Game {
     private Player currentPlayer;
@@ -21,6 +23,33 @@ public class Game {
     public Game() {
     }
 
+    public void start(){
+        update();
+        swapTurns();
+        loadArmyConfig();
+        update();
+
+    }
+
+    public void placeArmy(){
+       placeUnit();
+    }
+
+    public void placeUnit(){
+        //currentArmy.placeUnit();
+    }
+    public void play(){
+        processturn();
+
+    }
+
+    public void processturn(){
+        swapTurns();
+    }
+
+    public void update(){
+        board.update();
+    }
 
     public void swapTurns(){
         this.currentPlayer = enemyPlayer;
