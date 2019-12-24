@@ -1,15 +1,17 @@
 package army.unit;
 
+import common.Position;
+
 public class Miner extends Unit {
 
     public Miner() {
-        super(1,3, '8');
+        super(3,1, '8', Rank.Miner);
     }
 
     @Override
     public void battle(Unit enemyUnit) {
-        if (enemyUnit instanceof Bomb) {
-            this.position = enemyUnit.position;
+        if (enemyUnit.getRank() == Rank.Bomb) {
+            this.position = new Position(enemyUnit.getX(), enemyUnit.getY());
             enemyUnit.die();
             return;
         }

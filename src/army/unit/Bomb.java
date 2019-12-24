@@ -3,11 +3,11 @@ package army.unit;
 public class Bomb extends Unit {
 
     public Bomb() {
-        super(0, 11, 'B');
+        super(11, 0, 'B', Rank.Bomb);
     }
 
     @Override
     public String toString() {
-        return String.format("%s - (%d)\n",this.getClass().getName(),0);
+        return String.format("%s - (%d)\n",this.getClass().getSimpleName(),0);
     }
 }
