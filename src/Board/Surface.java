@@ -3,20 +3,20 @@ package Board;
 public class Surface {
 
     private boolean accessable;
-    private Grond grond;
-    private Surface surface;
+    private char character;
 
-    public Surface(boolean accessable) {
+    public Surface(boolean accessable, char character) {
         this.accessable = accessable;
+        this.character = character;
     }
 
     public boolean isAccessable(){
-        if (surface.equals(GrondSoorten.GROND) && accessable){
-            return true;
-        }
-        return false;
+        return accessable;
     }
 
+    public char getCharacter(){
+        return character;
+    }
 
 
 }

@@ -3,24 +3,24 @@ package common;
 import Board.Board;
 import Player.Player;
 import army.Army;
-import army.unit.Bomb;
+import army.ArmyColor;
 import army.unit.Unit;
+import common.FileManager;
+import java.io.*;
+import java.util.List;
 
-public class Game {
+public class Game implements Serializable {
     private Player currentPlayer;
     private Player enemyPlayer;
     private Army currentArmy;
     private Army enemyArmy;
     private Board board;
 
-    public Game(Player currentPlayer, Player enemyPlayer, Army currentArmy, Army enemyArmy) {
+    public Game() {
         this.currentPlayer = currentPlayer;
         this.enemyPlayer = enemyPlayer;
         this.currentArmy = currentArmy;
         this.enemyArmy = enemyArmy;
-    }
-
-    public Game() {
     }
 
     public void start(){
@@ -31,16 +31,37 @@ public class Game {
 
     }
 
-    public void placeArmy(){
-       placeUnit();
+    public void placeUnit(Unit unitOfChoice, Position destination){
+        currentArmy.placeUnit(unitOfChoice, destination);
     }
 
-    public void placeUnit(){
-        //currentArmy.placeUnit();
+    public void move(Unit unitOfChoice, Position destination){
+        checkMove(unitOfChoice, destination);
     }
-    public void play(){
-        processturn();
 
+    public void checkMove(Unit unitOfChoice, Position destination){
+        boolean isInBound = board.isInBounds(destination);
+        boolean canMoveTo = unitOfChoice.canMoveTo(destination);
+        boolean isAvailable = board.tileIsFree(destination);
+        boolean isAccessable = board.isAccessable(destination);
+        boolean friendlyAtPosition = currentArmy.hasUnitAtPosition(destination);
+    }
+
+    public void doMove(Unit unitOfChoice, Position destination){
+            boolean available = board.tileIsFree(destination);
+            if (available){
+                currentArmy.placeUnit(unitOfChoice, destination);
+                return;
+            }
+            battleEnemyAtPlace(unitOfChoice, destination);
+
+    }
+
+    public void battleEnemyAtPlace(Unit unitOfChoice, Position destination){
+        boolean enemyUnitAtPlace = enemyArmy.hasUnitAtPosition(destination);
+        if (enemyUnitAtPlace){
+            unitOfChoice.battle(enemyArmy.getUnitAtPosition(destination));
+        }
     }
 
     public void processturn(){
@@ -48,11 +69,24 @@ public class Game {
     }
 
     public void update(){
-        board.update();
+        board.clear();
+        List<Unit> currentUnitsOnBoard = currentArmy.getPlacedUnits();
+        List<Unit> enemyUnitsOnBoard = enemyArmy.getPlacedUnits();
+        boolean player = currentArmy.getColor() == ArmyColor.BLUE;
+        boolean otherPlayer = enemyArmy.getColor() == ArmyColor.RED;
+        board.update(currentUnitsOnBoard, player);
+        board.update(enemyUnitsOnBoard, otherPlayer);
     }
 
     public void swapTurns(){
-        this.currentPlayer = enemyPlayer;
+
+        Army swapArmy = currentArmy;
+        currentArmy = enemyArmy;
+        enemyArmy = swapArmy;
+    }
+
+    public void saveArmy(){
+        FileManager.write((Serializable) currentArmy, "LastArmy.txt");
     }
 
     public void loadArmyConfig(){
@@ -62,11 +96,58 @@ public class Game {
     }
 
 
-    public void loadGameState(GameState gamestate){
-        gamestate.getCurrentArmy();
-        gamestate.getEnemyArmy();
-        gamestate.getCurrentPlayer();
-        gamestate.getEnemyPlayer();
+    public void loadGameState(GameState gamestate) throws Exception {
+        try {
+            currentArmy = (Army) common.FileManager.read("ArmyConfig.txt");
+        } catch (FileNotFoundException e) {
+            throw new ExceptionInInitializerError("File not found");
+        } catch (IOException e) {
+            throw new ExceptionInInitializerError("Error parsing data from file");
+        } catch (Exception e) {
+            throw new ExceptionInInitializerError("Caught Exception, contact administrator for further information.");
+        }
     }
+
+    public boolean isPlaying() {
+        return !currentArmy.isDefeated() && !enemyArmy.isDefeated();
+    }
+
+    public ArmyColor getWinner() {
+        return this.currentArmy.isDefeated() ? this.enemyArmy.getColor() : this.currentArmy.getColor();
+    }
+
+    public Unit getUnitAtPositionOfArmy(Position position) {
+        return currentArmy.getUnitAtPosition(position);
+    }
+
+    public boolean armyHasUnitAtPosition(Position position){
+        return currentArmy.hasUnitAtPosition(position);
+    }
+
+    public String getSelectedUnitInformation(Unit unit) {
+        return String.format("Unit selected: %s at position (%d,%d)\n", unit.getClass().getSimpleName(), unit.getX(), unit.getY());
+    }
+
+    public List<Unit> getUnitsToPlace(Position position){
+        return currentArmy.getUnitsToPlace();
+    }
+
+    public boolean currentArmyHasUnitsToPlace() {
+        return currentArmy.hasUnitsToPlace();
+    }
+
+    public List<Unit> getCurrentArmyDeadUnits(){
+        return currentArmy.getDeadUnits();
+    }
+
+    public List<Unit> getEnemyArmyDeadUnits(){
+        return enemyArmy.getDeadUnits();
+    }
+
+    public ArmyColor getArmyColor(){
+        return currentArmy.getColor();
+    }
+
+
 
 }

@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 public class Army {
 
     private List<Unit> units;
-    private String color;
+    private ArmyColor color;
 
-    public Army(String color) {
+    public Army(ArmyColor color) {
         this.color = color;
         units = new ArrayList<>();
         initializeArmy();
@@ -56,15 +56,31 @@ public class Army {
     }
 
     public boolean isStartingPosition(Position position) {
-        return position.getX() < 10 && position.getY() < 4 && !hasUnitAtPosition(position);
+        if (hasUnitAtPosition(position)){
+            return false;
+        }
+        if (this.color.equals(ArmyColor.RED)) {
+            return position.getX() < 10 && position.getY() >= 0 && position.getX() >= 0 && position.getY() < 4;
+        }
+        if (this.color.equals(ArmyColor.BLUE)){
+            return position.getX() < 10 && position.getY() >= 0 && position.getX() >= 6 && position.getY() < 10;
+        }
+        return false;
     }
 
     public List<Unit> getUnitsToPlace() {
       return this.units.stream().filter(unit -> !unit.isPlaced()).collect(Collectors.toList());
     }
 
+    public List<Unit> getPlacedUnits(){
+        return this.units.stream().filter(Unit::isPlaced).collect(Collectors.toList());
+    }
+
     public boolean isDefeated() {
-        return units.stream().filter(unit -> unit instanceof Flag).noneMatch(Unit::isAlive);
+       boolean flagIsStolen = units.stream().anyMatch(unit -> unit.getRank() == Unit.Rank.FLAG&&unit.isDead());
+        List<Unit> placedUnits = this.getPlacedUnits();
+        boolean hasMoveableUnits = placedUnits.stream().anyMatch(unit -> unit.getRank() != Unit.Rank.FLAG && unit.getRank() != Unit.Rank.BOMB);
+        return (flagIsStolen||!hasMoveableUnits);
     }
 
     public boolean hasUnitAtPosition(Position position) {
@@ -79,12 +95,16 @@ public class Army {
         return this.units.stream().anyMatch(unit -> !unit.isPlaced());
     }
 
-    public String getColor() {
-        return color;
+    public ArmyColor getColor() {
+        return this.color;
     }
 
     public void showDeadUnits() {
         System.out.println(units.stream().filter(unit -> !unit.isAlive()).collect(Collectors.toList()));
+    }
+
+    public List<Unit> getDeadUnits() {
+        return units.stream().filter(Unit::isDead).collect(Collectors.toList());
     }
 }
 

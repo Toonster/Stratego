@@ -13,11 +13,19 @@ public abstract class Unit {
     protected Position position;
     private boolean isAlive = true;
     private Character character;
+    private final Rank rank;
+    private int visibleForTurns = 0;
 
-    public Unit(int movementSpeed, int power, Character character) {
+
+    public Unit(int movementSpeed, int power, Character character, Rank rank) {
         this.movementSpeed = movementSpeed;
         this.strength = power;
         this.character = character;
+        this.rank = rank;
+    }
+
+    public enum Rank {
+        BOMB, CAPTAIN, COLONEL, FLAG, GENERAL, LIEUTANENT, MAJOR, MARSHALL, MINER, SCOUT, SERGEANT, SPY
     }
 
     public int getStrength() {
@@ -58,6 +66,21 @@ public abstract class Unit {
             enemyUnit.die();
         }
         die();
+        enemyUnit.setVisibleToEnemy();
+    }
+
+    public void setVisibleToEnemy(){
+        visibleForTurns = 3;
+    }
+
+    public void updateSVTE(){
+        if (visibleForTurns > 0 ){
+            this.visibleForTurns--;
+        }
+    }
+
+    public boolean isVisibleToEnemy(){
+        return visibleForTurns > 0;
     }
 
     public int getX() {
@@ -90,8 +113,9 @@ public abstract class Unit {
                 destinationPath.add(new Position(x, y));
             }
         }
-
-        destinationPath.remove(destinationPath.size() - 1);
+        if (destinationPath.size() >= 2) {
+            destinationPath.remove(destinationPath.size() - 1);
+        }
         destinationPath.remove(0);
         return destinationPath;
     }
@@ -110,5 +134,13 @@ public abstract class Unit {
 
     public void remove(){
 
+    }
+
+    public Rank getRank(){
+        return this.rank;
+    }
+
+    public boolean isDead(){
+        return !isAlive;
     }
 }

@@ -3,15 +3,11 @@ package Board;
 public class Tile {
     private char character;
     private Surface surface;
-    private GrondSoorten soorten;
 
     public Tile (Surface surface){
         this.surface=surface;
     }
 
-    public Tile(GrondSoorten soorten) {
-        this.soorten = soorten;
-    }
 
     public void draw(){
         System.out.println("|\t|");
@@ -34,6 +30,10 @@ public class Tile {
             return true;
         }
         return false;
+    }
+
+    public char getSurfaceChar(){
+        return this.surface.getCharacter();
     }
 
 
