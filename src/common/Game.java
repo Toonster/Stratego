@@ -5,7 +5,7 @@ import Player.Player;
 import army.Army;
 import army.ArmyColor;
 import army.unit.Unit;
-import common.FileManager;
+import Board.Tile;
 import java.io.*;
 import java.util.List;
 
@@ -132,6 +132,10 @@ public class Game implements Serializable {
         return currentArmy.getUnitsToPlace();
     }
 
+    public List<Unit> getArmyUnitsToPlace(){
+        return currentArmy.getUnitsToPlace();
+    }
+
     public boolean currentArmyHasUnitsToPlace() {
         return currentArmy.hasUnitsToPlace();
     }
@@ -148,6 +152,7 @@ public class Game implements Serializable {
         return currentArmy.getColor();
     }
 
-
-
+    public Tile[][] getGamefield(){
+        return board.getGameField();
+    }
 }

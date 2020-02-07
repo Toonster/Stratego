@@ -1,6 +1,5 @@
 package army.unit;
 
-import army.Army;
 import common.Position;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ public abstract class Unit {
     protected Position position;
     private boolean isAlive = true;
     private Character character;
-    private final Rank rank;
+    private Rank rank;
     private int visibleForTurns = 0;
 
 
@@ -21,8 +20,16 @@ public abstract class Unit {
         this.movementSpeed = movementSpeed;
         this.strength = power;
         this.character = character;
-        this.rank = rank;
+        this.rank= rank;
     }
+
+    public Unit(int movementSpeed, int strength, Character character) {
+        this.movementSpeed = movementSpeed;
+        this.strength = strength;
+        this.character = character;
+    }
+
+    public abstract boolean getRank();
 
     public enum Rank {
         BOMB, CAPTAIN, COLONEL, FLAG, GENERAL, LIEUTANENT, MAJOR, MARSHALL, MINER, SCOUT, SERGEANT, SPY
@@ -134,10 +141,6 @@ public abstract class Unit {
 
     public void remove(){
 
-    }
-
-    public Rank getRank(){
-        return this.rank;
     }
 
     public boolean isDead(){
