@@ -2,8 +2,8 @@ package Board;
 
 import army.unit.Unit;
 import common.Position;
+import javafx.scene.Node;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
@@ -94,5 +94,9 @@ public class Board {
 
     public Tile[][] getGameField() {
         return gameField;
+    }
+
+    public Tile getSquare(int i, int j) {
+        return gameField[i][j];
     }
 }

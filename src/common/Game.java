@@ -1,34 +1,23 @@
 package common;
 
 import Board.Board;
-import Player.Player;
 import army.Army;
 import army.ArmyColor;
 import army.unit.Unit;
 import Board.Tile;
 import java.io.*;
 import java.util.List;
+import java.util.Random;
 
 public class Game implements Serializable {
-    private Player currentPlayer;
-    private Player enemyPlayer;
     private Army currentArmy;
     private Army enemyArmy;
     private Board board;
 
     public Game() {
-        this.currentPlayer = currentPlayer;
-        this.enemyPlayer = enemyPlayer;
-        this.currentArmy = currentArmy;
-        this.enemyArmy = enemyArmy;
-    }
-
-    public void start(){
-        update();
-        swapTurns();
-        loadArmyConfig();
-        update();
-
+        Board board = new Board();
+        currentArmy = new Army(ArmyColor.BLUE);
+        enemyArmy = new Army(ArmyColor.RED);
     }
 
     public void placeUnit(Unit unitOfChoice, Position destination){
@@ -89,14 +78,7 @@ public class Game implements Serializable {
         FileManager.write((Serializable) currentArmy, "LastArmy.txt");
     }
 
-    public void loadArmyConfig(){
-        currentArmy.initializeArmy();
-        enemyArmy.initializeArmy();
-
-    }
-
-
-    public void loadGameState(GameState gamestate) throws Exception {
+    public void loadArmyConfig() throws Exception {
         try {
             currentArmy = (Army) common.FileManager.read("ArmyConfig.txt");
         } catch (FileNotFoundException e) {
@@ -154,5 +136,22 @@ public class Game implements Serializable {
 
     public Tile[][] getGamefield(){
         return board.getGameField();
+    }
+
+    public void computerPlaceArmy() {
+        Random rand = new Random();
+        while (currentArmy.hasUnitsToPlace()) {
+            List<Unit> unitsToPlace = currentArmy.getUnitsToPlace();
+            Unit selectedUnit = unitsToPlace.get(rand.nextInt(unitsToPlace.size()));
+            Position unitDestination = new Position(rand.nextInt(10), rand.nextInt(10));
+            try {
+                placeUnit(selectedUnit, unitDestination);
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    public Unit selectRandomUnit(){
+        return currentArmy.selectRandomPlacedUnit();
     }
 }

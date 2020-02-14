@@ -1,6 +1,9 @@
 package common;
 
-public class Position {
+import java.io.Serializable;
+import java.util.Objects;
+
+public class Position implements Serializable {
 
     private int x;
     private int y;
@@ -21,5 +24,19 @@ public class Position {
     public void add(Position position) {
         this.x += position.getX();
         this.y += position.getY();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Position position = (Position) o;
+        return x == position.x &&
+                y == position.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }

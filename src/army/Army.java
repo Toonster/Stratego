@@ -3,11 +3,13 @@ package army;
 import army.unit.*;
 import common.Position;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
-public class Army {
+public class Army implements Serializable {
 
     private List<Unit> units;
     private ArmyColor color;
@@ -19,23 +21,37 @@ public class Army {
     }
 
     public void initializeArmy() {
-        addAmountOfUnitsOfType(new Flag(), 1);
-        addAmountOfUnitsOfType(new Spy(), 1);
-        addAmountOfUnitsOfType(new Scout(), 8);
-        addAmountOfUnitsOfType(new Miner(), 5);
-        addAmountOfUnitsOfType(new Sergeant(), 4);
-        addAmountOfUnitsOfType(new Lieutenant(), 4);
-        addAmountOfUnitsOfType(new Captain(), 4);
-        addAmountOfUnitsOfType(new Major(), 3);
-        addAmountOfUnitsOfType(new Colonel(), 2);
-        addAmountOfUnitsOfType(new General(), 1);
-        addAmountOfUnitsOfType(new Marshal(), 1);
-        addAmountOfUnitsOfType(new Bomb(), 6);
-    }
-
-    public void addAmountOfUnitsOfType(Unit unit, int amount) {
-        for (int i = 0; i < amount; i++) {
-            units.add(unit);
+        units.add(new Flag());
+        units.add(new Spy());
+        for (int i = 0; i < 8; i++) {
+            units.add(new Scout());
+        }
+        for (int i = 0; i < 5; i++) {
+            units.add(new Miner());
+        }
+        for (int i = 0; i < 4; i++) {
+            units.add(new Sergeant());
+        }
+        for (int i = 0; i < 4; i++) {
+            units.add(new Lieutenant());
+        }
+        for (int i = 0; i < 4; i++) {
+            units.add(new Captain());
+        }
+        for (int i = 0; i < 3; i++) {
+            units.add(new Major());
+        }
+        for (int i = 0; i < 2; i++) {
+            units.add(new Colonel());
+        }
+        for (int i = 0; i < 1; i++) {
+            units.add(new General());
+        }
+        for (int i = 0; i < 1; i++) {
+            units.add(new Marshal());
+        }
+        for (int i = 0; i < 6; i++) {
+            units.add(new Bomb());
         }
     }
 
@@ -47,48 +63,44 @@ public class Army {
         return totalStrength;
     }
 
-    public Unit getUnitAtPosition(Position position){
-        return (Unit) units.stream().filter(unit -> unit.atPosition(position));
+    public Unit getUnitAtPosition(Position position) {
+        return units.stream().filter(unit -> unit.atPosition(position)).findFirst().orElse(null);
     }
 
     public void placeUnit(Unit unit, Position position) {
         unit.place(position);
     }
 
-    public boolean isStartingPosition(Position position) {
-        if (hasUnitAtPosition(position)){
+    public boolean isAvailableStartingPosition(Position position) {
+        if (hasUnitAtPosition(position)) {
             return false;
         }
         if (this.color.equals(ArmyColor.RED)) {
-            return position.getX() < 10 && position.getY() >= 0 && position.getX() >= 0 && position.getY() < 4;
+            return position.getX() < 10 && position.getX() >= 0 && position.getY() >= 0 && position.getY() < 4;
         }
-        if (this.color.equals(ArmyColor.BLUE)){
-            return position.getX() < 10 && position.getY() >= 0 && position.getX() >= 6 && position.getY() < 10;
+        if (this.color.equals(ArmyColor.BLUE)) {
+            return position.getX() < 10 && position.getX() >= 0 && position.getY() >= 6 && position.getY() < 10;
         }
         return false;
     }
 
     public List<Unit> getUnitsToPlace() {
-      return this.units.stream().filter(unit -> !unit.isPlaced()).collect(Collectors.toList());
+        return this.units.stream().filter(unit -> !unit.isPlaced()).collect(Collectors.toList());
     }
 
-    public List<Unit> getPlacedUnits(){
+    public List<Unit> getPlacedUnits() {
         return this.units.stream().filter(Unit::isPlaced).collect(Collectors.toList());
     }
 
     public boolean isDefeated() {
-       boolean flagIsStolen = units.stream().anyMatch(unit -> unit.getRank() == Unit.Rank.FLAG&&unit.isDead());
+        boolean flagIsDead = units.stream().anyMatch(unit -> unit.getRank() == Unit.Rank.Flag && unit.isDead());
         List<Unit> placedUnits = this.getPlacedUnits();
-        boolean hasMoveableUnits = placedUnits.stream().anyMatch(unit -> unit.getRank() != Unit.Rank.FLAG && unit.getRank() != Unit.Rank.BOMB);
-        return (flagIsStolen||!hasMoveableUnits);
+        boolean hasMovableUnit = placedUnits.stream().anyMatch(unit -> unit.getRank() != Unit.Rank.Flag && unit.getRank() != Unit.Rank.Bomb);
+        return (flagIsDead || !hasMovableUnit);
     }
 
     public boolean hasUnitAtPosition(Position position) {
         return getUnitAtPosition(position) != null;
-    }
-
-    public List<Unit> getUnits() {
-        return units;
     }
 
     public boolean hasUnitsToPlace() {
@@ -99,12 +111,26 @@ public class Army {
         return this.color;
     }
 
-    public void showDeadUnits() {
-        System.out.println(units.stream().filter(unit -> !unit.isAlive()).collect(Collectors.toList()));
-    }
-
     public List<Unit> getDeadUnits() {
         return units.stream().filter(Unit::isDead).collect(Collectors.toList());
     }
-}
 
+    public void updateUnitVisibility() {
+        this.units.forEach(Unit::updateVisibleToEnemy);
+    }
+
+    public void giveStandardPosToUnits() {
+        int index = 0;
+        for (int y = 6; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+                units.get(index++).place(new Position(x, y));
+            }
+        }
+    }
+
+    public Unit selectRandomPlacedUnit() {
+        Random rand = new Random();
+        List<Unit> placedUnits = this.units.stream().filter(Unit::isPlaced).collect(Collectors.toList());
+        return placedUnits.get(rand.nextInt(placedUnits.size()));
+    }
+}
